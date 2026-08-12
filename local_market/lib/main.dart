@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'core/constants/app_constants.dart';
 import 'core/routes/app_router.dart';
 import 'core/routes/app_routes.dart';
+import 'core/services/firebase_service.dart';
 import 'core/theme/app_theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await FirebaseService.instance.initializeFirebase();
   runApp(const LocalMarketApp());
 }
 

@@ -21,4 +21,20 @@ class CartItemModel {
       shopId: shopId,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'product': product.toJson(),
+      'quantity': quantity,
+      'shop_id': shopId,
+    };
+  }
+
+  factory CartItemModel.fromJson(Map<String, dynamic> json) {
+    return CartItemModel(
+      product: ProductModel.fromJson(json['product'] as Map<String, dynamic>),
+      quantity: json['quantity'] as int,
+      shopId: json['shop_id'] as String,
+    );
+  }
 }

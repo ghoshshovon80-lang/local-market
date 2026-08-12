@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Local Market needs camera access to take original photos of physical products.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Local Market needs photo library access to select product images.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Local Market needs your location to discover nearby physical shops and real products.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

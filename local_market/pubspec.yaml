@@ -37,6 +37,15 @@ dependencies:
   # Official Flutter package to trigger native device phone calls and map intents
   url_launcher: ^6.3.1
 
+  # Official Flutter plugin for taking product camera photos and gallery picking
+  image_picker: ^1.1.2
+
+  # Firebase SDK suite for authentication, Firestore database and Storage
+  firebase_core: ^3.12.1
+  firebase_auth: ^5.5.1
+  cloud_firestore: ^5.6.5
+  firebase_storage: ^12.4.5
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8

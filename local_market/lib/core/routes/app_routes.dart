@@ -11,5 +11,9 @@ abstract class AppRoutes {
   static const String checkout = '/checkout';
   static const String orderTracking = '/order/tracking';
   static const String sellerDashboard = '/seller/dashboard';
+  static const String sellerOnboarding = '/seller/onboarding';
+  static const String sellerAddProduct = '/seller/add-product';
+  static const String sellerManageProducts = '/seller/manage-products';
+  static const String sellerOrders = '/seller/orders';
   static const String profile = '/profile';
 }

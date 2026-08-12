@@ -56,6 +56,7 @@ class OrderModel {
       'buyer_id': buyerId,
       'shop_id': shopId,
       'shop_name': shopName,
+      'items': items.map((i) => i.toJson()).toList(),
       'order_type': orderType.name,
       'subtotal': subtotal,
       'delivery_fee': deliveryFee,
@@ -75,6 +76,11 @@ class OrderModel {
       buyerId: json['buyer_id'] as String,
       shopId: json['shop_id'] as String,
       shopName: json['shop_name'] as String? ?? 'Local Shop',
+      items:
+          (json['items'] as List<dynamic>?)
+              ?.map((i) => CartItemModel.fromJson(i as Map<String, dynamic>))
+              .toList() ??
+          const [],
       orderType: OrderType.values.byName(json['order_type'] as String),
       subtotal: (json['subtotal'] as num).toDouble(),
       deliveryFee: (json['delivery_fee'] as num).toDouble(),
