@@ -3,6 +3,8 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/services/impl/mock_location_service.dart';
+import '../../../core/services/impl/real_location_service.dart';
+import '../../../core/services/location_service.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../widgets/buttons/primary_button.dart';
 import '../../../widgets/buttons/secondary_button.dart';
@@ -18,7 +20,7 @@ enum OnboardingViewMode {
 }
 
 class LocationOnboardingScreen extends StatefulWidget {
-  final AppLocationService? locationService;
+  final LocationService? locationService;
   final OnboardingViewMode initialMode;
 
   const LocationOnboardingScreen({
@@ -33,7 +35,7 @@ class LocationOnboardingScreen extends StatefulWidget {
 }
 
 class _LocationOnboardingScreenState extends State<LocationOnboardingScreen> {
-  late AppLocationService _locationService;
+  late LocationService _locationService;
   late OnboardingViewMode _viewMode;
   final TextEditingController _manualLocationController =
       TextEditingController();
@@ -50,7 +52,7 @@ class _LocationOnboardingScreenState extends State<LocationOnboardingScreen> {
   @override
   void initState() {
     super.initState();
-    _locationService = widget.locationService ?? AppLocationService();
+    _locationService = widget.locationService ?? RealLocationService();
     _viewMode = widget.initialMode;
   }
 
@@ -68,10 +70,17 @@ class _LocationOnboardingScreenState extends State<LocationOnboardingScreen> {
       _viewMode = OnboardingViewMode.loading;
     });
 
-    final success = await _locationService.requestLocationPermission(
-      simulateDenied: simulateDenied,
-      simulateError: simulateError,
-    );
+    bool success = false;
+
+    if (_locationService is AppLocationService) {
+      success = await (_locationService as AppLocationService)
+          .requestLocationPermission(
+            simulateDenied: simulateDenied,
+            simulateError: simulateError,
+          );
+    } else {
+      success = await _locationService.requestLocationPermission();
+    }
 
     if (!mounted) return;
 
@@ -79,9 +88,22 @@ class _LocationOnboardingScreenState extends State<LocationOnboardingScreen> {
       _navigateToHome();
     } else {
       setState(() {
-        if (_locationService.permissionState ==
-            LocationPermissionState.unavailable) {
-          _viewMode = OnboardingViewMode.locationUnavailable;
+        if (_locationService is RealLocationService) {
+          final realStatus = (_locationService as RealLocationService).status;
+          if (realStatus == RealLocationPermissionStatus.serviceDisabled ||
+              realStatus == RealLocationPermissionStatus.error) {
+            _viewMode = OnboardingViewMode.locationUnavailable;
+          } else {
+            _viewMode = OnboardingViewMode.permissionDenied;
+          }
+        } else if (_locationService is AppLocationService) {
+          final mockStatus =
+              (_locationService as AppLocationService).permissionState;
+          if (mockStatus == LocationPermissionState.unavailable) {
+            _viewMode = OnboardingViewMode.locationUnavailable;
+          } else {
+            _viewMode = OnboardingViewMode.permissionDenied;
+          }
         } else {
           _viewMode = OnboardingViewMode.permissionDenied;
         }
@@ -159,7 +181,15 @@ class _LocationOnboardingScreenState extends State<LocationOnboardingScreen> {
                 onPressed: () {
                   final text = _manualLocationController.text.trim();
                   final selectedArea = text.isNotEmpty ? text : 'Beldanga';
-                  _locationService.setManualLocation(selectedArea);
+                  if (_locationService is RealLocationService) {
+                    (_locationService as RealLocationService).setManualLocation(
+                      selectedArea,
+                    );
+                  } else if (_locationService is AppLocationService) {
+                    (_locationService as AppLocationService).setManualLocation(
+                      selectedArea,
+                    );
+                  }
                   Navigator.pop(context);
                   _navigateToHome();
                 },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:local_market/core/services/impl/mock_location_service.dart';
 import 'package:local_market/features/onboarding/screens/location_onboarding_screen.dart';
 
 void main() {
@@ -11,7 +12,9 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      buildTestableWidget(const LocationOnboardingScreen()),
+      buildTestableWidget(
+        LocationOnboardingScreen(locationService: AppLocationService()),
+      ),
     );
 
     expect(find.text('Find Shops Near You'), findsOneWidget);
@@ -23,7 +26,9 @@ void main() {
     'Location Onboarding displays manual location modal on button tap',
     (WidgetTester tester) async {
       await tester.pumpWidget(
-        buildTestableWidget(const LocationOnboardingScreen()),
+        buildTestableWidget(
+          LocationOnboardingScreen(locationService: AppLocationService()),
+        ),
       );
 
       await tester.tap(find.text('Enter Location Manually'));
@@ -41,7 +46,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       buildTestableWidget(
-        const LocationOnboardingScreen(
+        LocationOnboardingScreen(
+          locationService: AppLocationService(),
           initialMode: OnboardingViewMode.permissionDenied,
         ),
       ),
