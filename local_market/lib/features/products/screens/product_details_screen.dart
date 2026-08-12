@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../core/services/cart_service.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../models/product_model.dart';
@@ -74,16 +75,74 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   void _onAddToCartPressed() {
-    if (_product == null) return;
-    final total = _product!.price * _quantity;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Added $_quantity x ${_product!.name} (${CurrencyFormatter.format(total)}) to Cart!',
+    if (_product == null || _shop == null) return;
+
+    final result = CartService.instance.addToCart(
+      _product!,
+      _shop!,
+      quantity: _quantity,
+    );
+
+    if (result.status == AddToCartStatus.success) {
+      final total = _product!.price * _quantity;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Added $_quantity x ${_product!.name} (${CurrencyFormatter.format(total)}) to Cart!',
+          ),
+          backgroundColor: AppColors.primary,
+          duration: const Duration(seconds: 2),
         ),
-        backgroundColor: AppColors.primary,
-        duration: const Duration(seconds: 2),
-      ),
+      );
+    } else if (result.status == AddToCartStatus.differentShopConflict) {
+      _showMultiShopConflictDialog(result.existingShopName ?? 'another shop');
+    }
+  }
+
+  void _showMultiShopConflictDialog(String existingShopName) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: AppSpacing.borderRadiusLg,
+          ),
+          title: const Text(
+            'Replace Cart Items?',
+            style: AppTypography.sectionTitle,
+          ),
+          content: Text(
+            'Your cart already contains items from "$existingShopName". Local Market orders are placed per shop.\n\nWould you like to clear your cart and start a new order from "${_shop?.shopName}"?',
+            style: AppTypography.body,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Continue with $existingShopName'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+              onPressed: () {
+                Navigator.pop(context);
+                if (_product != null && _shop != null) {
+                  CartService.instance.confirmClearAndAdd(
+                    _product!,
+                    _shop!,
+                    quantity: _quantity,
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Cart cleared. Added ${_product!.name}!'),
+                      backgroundColor: AppColors.primary,
+                    ),
+                  );
+                }
+              },
+              child: const Text('Clear Cart & Add'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -318,9 +377,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         // Bottom Fixed Bar (Quantity + Add to Cart)
         Container(
           padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.surface,
-            border: const Border(top: BorderSide(color: AppColors.divider)),
+            border: Border(top: BorderSide(color: AppColors.divider)),
           ),
           child: Row(
             children: [

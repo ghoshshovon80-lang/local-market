@@ -54,7 +54,7 @@ void main() {
     // Tap 'Cart' tab
     await tester.tap(find.text('Cart').last);
     await tester.pumpAndSettle();
-    expect(find.text('Cart Placeholder'), findsOneWidget);
+    expect(find.text('Your cart is empty'), findsOneWidget);
   });
 
   testWidgets('Buyer Home displays empty state when no shops/products exist', (
