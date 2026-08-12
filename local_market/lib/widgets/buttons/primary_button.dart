@@ -30,6 +30,7 @@ class PrimaryButton extends StatelessWidget {
         backgroundColor: backgroundColor ?? AppColors.primary,
         foregroundColor: textColor ?? AppColors.textOnPrimary,
         minimumSize: const Size.fromHeight(AppSpacing.buttonHeight),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
         shape: RoundedRectangleBorder(borderRadius: AppSpacing.borderRadiusMd),
       ),
       child: isLoading
@@ -47,12 +48,16 @@ class PrimaryButton extends StatelessWidget {
               children: [
                 if (icon != null) ...[
                   Icon(icon, size: AppSpacing.iconMd),
-                  const SizedBox(width: AppSpacing.sm),
+                  const SizedBox(width: AppSpacing.xs),
                 ],
-                Text(
-                  text,
-                  style: AppTypography.buttonText.copyWith(
-                    color: textColor ?? AppColors.textOnPrimary,
+                Flexible(
+                  child: Text(
+                    text,
+                    style: AppTypography.buttonText.copyWith(
+                      color: textColor ?? AppColors.textOnPrimary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
               ],

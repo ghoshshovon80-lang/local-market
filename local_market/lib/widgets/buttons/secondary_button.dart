@@ -24,6 +24,7 @@ class SecondaryButton extends StatelessWidget {
         backgroundColor: AppColors.primaryLight,
         foregroundColor: AppColors.primary,
         minimumSize: const Size.fromHeight(AppSpacing.buttonHeight),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: AppSpacing.borderRadiusMd),
       ),
@@ -33,11 +34,17 @@ class SecondaryButton extends StatelessWidget {
         children: [
           if (icon != null) ...[
             Icon(icon, size: AppSpacing.iconMd, color: AppColors.primary),
-            const SizedBox(width: AppSpacing.sm),
+            const SizedBox(width: AppSpacing.xs),
           ],
-          Text(
-            text,
-            style: AppTypography.buttonText.copyWith(color: AppColors.primary),
+          Flexible(
+            child: Text(
+              text,
+              style: AppTypography.buttonText.copyWith(
+                color: AppColors.primary,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
         ],
       ),
